@@ -49,13 +49,13 @@ def list():
 
 @reg.command()
 @click.argument('uri')
-def call(uri):
+@click.argument('args', nargs=-1)
+def call(uri, args):
     session = WAMPSession()
-
     @inlineCallbacks
     def run():
         try:
-            ret = yield session.call(uri)
+            ret = yield session.call(uri, *args)
         except Exception as e:
             print(e)
         else:
