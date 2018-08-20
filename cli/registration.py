@@ -50,3 +50,4 @@ def list():
 @reg.command()
 @click.argument('name')
 def call():
+    pass
