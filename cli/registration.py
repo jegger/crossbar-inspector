@@ -48,6 +48,19 @@ def list():
     runner.run(session)
 
 @reg.command()
-@click.argument('name')
-def call():
-    pass
+@click.argument('uri')
+def call(uri):
+    session = WAMPSession()
+
+    @inlineCallbacks
+    def run():
+        try:
+            ret = yield session.call(uri)
+        except Exception as e:
+            print(e)
+        else:
+            print(ret)
+        session.leave()
+
+    reactor.callLater(JOIN_TIMEOUT, run)
+    runner.run(session)
