@@ -14,3 +14,13 @@ This is a python3 app.
 How to use
 ==========
 venv/bin/python main.py
+
+Use the following evnironment variables for configuration:
+- WAMP_URL (default to "crossbar")
+- WAMP_REALM (default to "realm1")
+- CRA_USERNAME (the username for the CRA authentication, default to "backend")
+- CRA_SECRET (the secret for the CRA authentication)
+
+
+### How to list registrations
+WAMP_URL=ws://my-crossbar.com/ws venv/bin/python main.py reg list
