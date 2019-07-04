@@ -3,10 +3,13 @@ from twisted.internet import reactor
 from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 from autobahn.wamp import auth
 
+
+
 from utils import WAMP_URL
 from utils import CRA_USERNAME
 from utils import CRA_SECRET
 from utils import WAMP_REALM
+
 
 class WAMPSession(ApplicationSession):
 
@@ -68,7 +71,9 @@ class WAMPSession(ApplicationSession):
         self.log.info('transport disconnected')
         reactor.stop()
 
+
 runner = ApplicationRunner(WAMP_URL, WAMP_REALM)
+
 
 if __name__ == '__main__':
     runner.run(WAMPSession)

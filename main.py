@@ -3,6 +3,7 @@
 import click
 from cli.registration import reg
 from cli.subscription import sub
+from cli.publish import publish
 
 @click.group()
 def cli():
@@ -14,6 +15,7 @@ def cli():
 
 cli.add_command(reg)
 cli.add_command(sub)
+cli.add_command(publish)
 
 if __name__ == '__main__':
     cli()

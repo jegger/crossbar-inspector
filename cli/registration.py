@@ -22,6 +22,7 @@ def list():
 
     @inlineCallbacks
     def run():
+        print("Get registrations")
         regs = yield session.get_regs()
 
         # Fetch detailed info about registrations
@@ -49,17 +50,33 @@ def list():
 
 @reg.command()
 @click.argument('uri')
+@click.option('--kwargs', default='{}',
+              help="""pass keyword arguments like: "{'args': 'value'}" """)
 @click.argument('args', nargs=-1)
-def call(uri, args):
+def call(uri, kwargs, args):
+    print(f"raw args: {args}")
+    print(f"raw kwargs: {kwargs}")
     session = WAMPSession()
+    import json
+    s = kwargs.replace("'", "\"").replace('False', 'false')
+    s = s.replace('True', 'true').replace('None', 'null')
+    print(s)
+    _kwargs = json.loads(s)
+
     @inlineCallbacks
     def run():
+        print("call method")
         try:
-            ret = yield session.call(uri, *args)
+            ret = yield session.call(uri, *args, **_kwargs)
         except Exception as e:
             print(e)
         else:
-            print(ret)
+            try:
+                ret = json.dumps(ret, indent=4)
+            except Exception as e:
+                pass
+            else:
+                print(ret)
         session.leave()
 
     reactor.callLater(JOIN_TIMEOUT, run)
