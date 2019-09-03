@@ -1,5 +1,6 @@
 import click
-
+import ast
+import json
 from operator import itemgetter
 from texttable import Texttable
 from inspector import runner
@@ -56,8 +57,16 @@ def list():
 def call(uri, kwargs, args):
     print(f"raw args: {args}")
     print(f"raw kwargs: {kwargs}")
+    # Convert lists and dicts provided in args to python-dicts and lists
+    _args = []
+    for arg in args:
+        try:
+            py_arg = ast.literal_eval(arg)
+            _args.append(py_arg)
+        except (SyntaxError, ValueError):
+            _args.append(arg)
+    print("converted args:", _args)
     session = WAMPSession()
-    import json
     s = kwargs.replace("'", "\"").replace('False', 'false')
     s = s.replace('True', 'true').replace('None', 'null')
     print(s)
@@ -67,7 +76,7 @@ def call(uri, kwargs, args):
     def run():
         print("call method")
         try:
-            ret = yield session.call(uri, *args, **_kwargs)
+            ret = yield session.call(uri, *_args, **_kwargs)
         except Exception as e:
             print(e)
         else:
