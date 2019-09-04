@@ -53,8 +53,10 @@ def list():
 @click.argument('uri')
 @click.option('--kwargs', default='{}',
               help="""pass keyword arguments like: "{'args': 'value'}" """)
+@click.option('--tofile', type=click.Path())
 @click.argument('args', nargs=-1)
-def call(uri, kwargs, args):
+def call(uri, tofile, kwargs, args):
+    print(f"to-file: {tofile}")
     print(f"raw args: {args}")
     print(f"raw kwargs: {kwargs}")
     # Convert lists and dicts provided in args to python-dicts and lists
@@ -86,6 +88,9 @@ def call(uri, kwargs, args):
                 pass
             else:
                 print(ret)
+                if tofile:
+                    with open(tofile, 'w') as f:
+                        f.write(ret)
         session.leave()
 
     reactor.callLater(JOIN_TIMEOUT, run)
