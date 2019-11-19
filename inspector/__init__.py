@@ -21,7 +21,12 @@ class WAMPSession(ApplicationSession):
         self.log.info('authentication challenge received')
         if challenge.method == u"wampcra":
             if u'salt' in challenge.extra:
-                self.log.error("we are out of salt")
+                key = auth.derive_key(CRA_SECRET,
+                                      challenge.extra['salt'],
+                                      challenge.extra['iterations'],
+                                      challenge.extra['keylen'])
+                signature = auth.compute_wcs(key, challenge.extra['challenge'])
+                return signature
             else:
                 signature = auth.compute_wcs(CRA_SECRET,
                                              challenge.extra['challenge'])

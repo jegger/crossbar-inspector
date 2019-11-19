@@ -76,7 +76,7 @@ def call(uri, tofile, kwargs, args):
 
     @inlineCallbacks
     def run():
-        print("call method")
+        print(f"call method {uri} with {_args}, {_kwargs}")
         try:
             ret = yield session.call(uri, *_args, **_kwargs)
         except Exception as e:
