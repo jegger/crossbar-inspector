@@ -8,6 +8,7 @@ from inspector import WAMPSession
 from twisted.internet.defer import inlineCallbacks
 from twisted.internet import reactor
 from utils import JOIN_TIMEOUT
+from autobahn.wamp.types import CallOptions
 
 
 @click.group()
@@ -54,8 +55,9 @@ def list():
 @click.option('--kwargs', default='{}',
               help="""pass keyword arguments like: "{'args': 'value'}" """)
 @click.option('--tofile', type=click.Path())
+@click.option('--progressive', is_flag=True)
 @click.argument('args', nargs=-1)
-def call(uri, tofile, kwargs, args):
+def call(uri, tofile, progressive, kwargs, args):
     print(f"to-file: {tofile}")
     print(f"raw args: {args}")
     print(f"raw kwargs: {kwargs}")
@@ -76,9 +78,16 @@ def call(uri, tofile, kwargs, args):
 
     @inlineCallbacks
     def run():
-        print(f"call method {uri} with {_args}, {_kwargs}")
+        def on_progress(data):
+            print(f'on_progress: {len(data)}')
+        if progressive:
+            print(f'Progressive call to method {uri} with {_args}, {_kwargs}')
+            options = CallOptions(on_progress=on_progress)
+        else:
+            print(f"call method {uri} with {_args}, {_kwargs}")
+            options = CallOptions()
         try:
-            ret = yield session.call(uri, *_args, **_kwargs)
+            ret = yield session.call(uri, *_args, **_kwargs, options=options)
         except Exception as e:
             print(e)
         else:
