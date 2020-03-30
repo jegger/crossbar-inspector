@@ -14,6 +14,26 @@ def sub():
     """For inspecting subscriptions on crossbar"""
     pass
 
+
+@sub.command()
+def fastlist():
+    """List subscriptions without details"""
+    session = WAMPSession()
+
+    @inlineCallbacks
+    def run():
+        subs = yield session.get_subs()
+
+        print("exact:", len(subs['exact']))
+        print("prefix:", len(subs['prefix']))
+        print("wildcard:", len(subs['wildcard']))
+
+        session.leave()
+
+    reactor.callLater(JOIN_TIMEOUT, run)
+    runner.run(session)
+
+
 @sub.command()
 def list():
     """ List all subscriptions.
