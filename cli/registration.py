@@ -16,6 +16,26 @@ def reg():
     """For inspecting registrations on crossbar"""
     pass
 
+
+@reg.command()
+def fastlist():
+    """Display amount of registrations"""
+    session = WAMPSession()
+
+    @inlineCallbacks
+    def run():
+        print("Get registrations")
+        regs = yield session.get_regs()
+
+        print("exact:", len(regs['exact']))
+        print("prefix:", len(regs['prefix']))
+        print("wildcard:", len(regs['wildcard']))
+
+        session.leave()
+    reactor.callLater(JOIN_TIMEOUT, run)
+    runner.run(session)
+
+
 @reg.command()
 def list():
     """ List all registrations.
