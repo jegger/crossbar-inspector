@@ -68,6 +68,11 @@ class WAMPSession(ApplicationSession):
         count = yield self.call("wamp.subscription.count_subscribers", sub)
         returnValue(count)
 
+    @inlineCallbacks
+    def get_session_count(self):
+        count = yield self.call("wamp.session.count")
+        return count
+
     def onLeave(self, details):
         self.log.info('session left: {}'.format(details))
         self.disconnect()
