@@ -1,6 +1,7 @@
 import click
 import ast
 import json
+import base64
 from operator import itemgetter
 from texttable import Texttable
 from inspector import runner
@@ -70,6 +71,7 @@ def list():
     reactor.callLater(JOIN_TIMEOUT, run)
     runner.run(session)
 
+progress_file = ''
 @reg.command()
 @click.argument('uri')
 @click.option('--kwargs', default='{}',
@@ -100,6 +102,8 @@ def call(uri, tofile, progressive, kwargs, args):
     def run():
         def on_progress(data):
             print(f'on_progress: {len(data)}')
+            global progress_file
+            progress_file += data['data']
         if progressive:
             print(f'Progressive call to method {uri} with {_args}, {_kwargs}')
             options = CallOptions(on_progress=on_progress)
@@ -120,6 +124,11 @@ def call(uri, tofile, progressive, kwargs, args):
                 if tofile:
                     with open(tofile, 'w') as f:
                         f.write(ret)
+        global progress_file
+        if progress_file:
+            with open(tofile, 'wb') as f:
+                data = base64.b64decode(progress_file)
+                f.write(data)
         session.leave()
 
     reactor.callLater(JOIN_TIMEOUT, run)
