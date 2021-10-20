@@ -4,18 +4,17 @@ from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 from autobahn.wamp import auth
 
 
-
-from utils import WAMP_URL
-from utils import CRA_USERNAME
-from utils import CRA_SECRET
-from utils import WAMP_REALM
+from utils import WAMP_URL, CRA_USERNAME, CRA_SECRET, WAMP_REALM, CLIENT_ID, ACCESS_TOKEN
 
 
 class WAMPSession(ApplicationSession):
 
     def onConnect(self):
         self.log.info('transport connected')
-        self.join(WAMP_REALM, [u"wampcra"], CRA_USERNAME)
+        if CLIENT_ID and ACCESS_TOKEN:
+            self.join(WAMP_REALM, [u"anonymous"])
+        else:
+            self.join(WAMP_REALM, [u"wampcra"], CRA_USERNAME)
 
     def onChallenge(self, challenge):
         self.log.info('authentication challenge received')
@@ -82,7 +81,11 @@ class WAMPSession(ApplicationSession):
         reactor.stop()
 
 
-runner = ApplicationRunner(WAMP_URL, WAMP_REALM)
+runner = ApplicationRunner(
+    WAMP_URL,
+    WAMP_REALM,
+    headers={"cookie": f"pip_clientId={CLIENT_ID}; pip_at={ACCESS_TOKEN}"},
+)
 
 
 if __name__ == '__main__':
