@@ -10,6 +10,7 @@ CRA_USERNAME = "backend"
 CRA_USERNAME = os.getenv('CRA_USERNAME', CRA_USERNAME)
 
 CRA_SECRET = "quartabiz"
+CRA_SECRET = os.getenv('CRA_SECRET', CRA_SECRET)
 CLIENT_ID = os.getenv('CLIENT_ID')
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 
